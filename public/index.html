@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partner Planeta — Tienda de Afiliados</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3a;
+    --accent: #7c5cfc;
+    --accent2: #c084fc;
+    --gold: #f0b429;
+    --text: #e8e8f0;
+    --muted: #7878a0;
+    --card-hover: #1e1e2e;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.4rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--gold); -webkit-text-fill-color: var(--gold); }
+  .header-meta {
+    font-size: 0.78rem; color: var(--muted);
+    letter-spacing: 0.05em; text-transform: uppercase;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 72px 32px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(124,92,252,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800; line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent), var(--accent2), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    color: var(--muted); font-size: 1.05rem; max-width: 520px; margin: 0 auto 32px;
+    font-weight: 300; line-height: 1.6;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(124,92,252,0.12); border: 1px solid rgba(124,92,252,0.3);
+    color: var(--accent2); padding: 6px 14px; border-radius: 100px;
+    font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase;
+    font-weight: 500;
+  }
+  .badge::before { content: '●'; font-size: 0.5rem; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* FILTERS */
+  .filters-wrap {
+    padding: 0 32px 32px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .search-bar {
+    position: relative; max-width: 500px; margin: 0 auto; width: 100%;
+  }
+  .search-bar input {
+    width: 100%;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); padding: 12px 16px 12px 44px;
+    border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+  .search-bar input::placeholder { color: var(--muted); }
+  .search-icon {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    color: var(--muted); font-size: 1.1rem; pointer-events: none;
+  }
+  .filter-tabs {
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  }
+  .tab {
+    cursor: pointer;
+    padding: 8px 18px; border-radius: 100px;
+    border: 1px solid var(--border);
+    background: transparent; color: var(--muted);
+    font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .tab:hover { border-color: var(--accent); color: var(--text); }
+  .tab.active {
+    background: var(--accent); border-color: var(--accent);
+    color: #fff; font-weight: 600;
+  }
+  .results-count {
+    text-align: center; color: var(--muted); font-size: 0.85rem;
+  }
+  .results-count strong { color: var(--text); }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px; padding: 0 32px 64px;
+    max-width: 1400px; margin: 0 auto;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    animation: fadeUp 0.4s ease both;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(124,92,252,0.5);
+    box-shadow: 0 8px 32px rgba(124,92,252,0.15);
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(16px) }
+    to   { opacity:1; transform:translateY(0) }
+  }
+  .card-header {
+    padding: 20px 20px 12px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .brand-logo {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+  .brand-logo img {
+    width: 28px; height: 28px; object-fit: contain;
+    filter: brightness(1.2);
+  }
+  .brand-logo .fallback {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 1rem; color: var(--accent2);
+  }
+  .card-meta { flex: 1; min-width: 0; }
+  .card-brand {
+    font-size: 0.72rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .category-tag {
+    display: inline-block;
+    font-size: 0.68rem; padding: 2px 8px; border-radius: 100px;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .card-body { padding: 0 20px 16px; flex: 1; }
+  .card-title {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 0.95rem; line-height: 1.3; margin-bottom: 8px;
+    color: var(--text);
+  }
+  .card-desc {
+    font-size: 0.82rem; color: var(--muted); line-height: 1.55;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-footer { padding: 12px 20px 20px; }
+  .cta-btn {
+    display: block; width: 100%;
+    padding: 11px 16px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), #9f75ff);
+    color: #fff; text-decoration: none; text-align: center;
+    font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
+    transition: opacity 0.2s, transform 0.15s;
+    border: none; cursor: pointer;
+  }
+  .cta-btn:hover { opacity: 0.88; transform: scale(0.98); }
+
+  /* Category colors */
+  .cat-tech     { background: rgba(96,165,250,0.15); color: #60a5fa; }
+  .cat-business { background: rgba(52,211,153,0.15); color: #34d399; }
+  .cat-beauty   { background: rgba(244,114,182,0.15); color: #f472b6; }
+  .cat-health   { background: rgba(251,191,36,0.15);  color: #fbbf24; }
+  .cat-fashion  { background: rgba(192,132,252,0.15); color: #c084fc; }
+  .cat-home     { background: rgba(251,146,60,0.15);  color: #fb923c; }
+  .cat-entertainment { background: rgba(248,113,113,0.15); color: #f87171; }
+  .cat-general  { background: rgba(148,163,184,0.15); color: #94a3b8; }
+  .cat-fitness  { background: rgba(74,222,128,0.15);  color: #4ade80; }
+  .cat-travel   { background: rgba(34,211,238,0.15);  color: #22d3ee; }
+
+  /* EMPTY */
+  .empty {
+    grid-column: 1/-1; text-align: center;
+    padding: 64px 32px; color: var(--muted);
+  }
+  .empty h3 { font-family:'Syne',sans-serif; font-size:1.3rem; margin-bottom:8px; color:var(--text); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 32px; text-align: center;
+    color: var(--muted); font-size: 0.8rem;
+  }
+  footer a { color: var(--accent2); text-decoration: none; }
+
+  @media(max-width:600px) {
+    header { padding: 12px 16px; }
+    .hero { padding: 48px 16px 32px; }
+    .filters-wrap { padding: 0 16px 24px; }
+    .grid { padding: 0 16px 48px; gap: 14px; }
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media(max-width:400px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Partner<span>•</span>Planeta</div>
+  <div class="header-meta">Catálogo de Afiliados</div>
+</header>
+
+<section class="hero">
+  <div class="badge">78 marcas activas · studiosaudiovisual.com</div>
+  <h1 style="margin-top:24px">Descubre las mejores<br><em>marcas del mundo</em></h1>
+  <p>Accede a productos y servicios seleccionados de marcas globales. Cada enlace es una oportunidad.</p>
+</section>
+
+<div class="filters-wrap">
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Buscar marca o categoría..." oninput="filterProducts()">
+  </div>
+  <div class="filter-tabs" id="filterTabs">
+    <button class="tab active" onclick="setCategory('all', this)">Todos</button>
+    <button class="tab" onclick="setCategory('tech', this)">💻 Tech</button>
+    <button class="tab" onclick="setCategory('business', this)">💼 Negocios</button>
+    <button class="tab" onclick="setCategory('beauty', this)">✨ Belleza</button>
+    <button class="tab" onclick="setCategory('health', this)">🌿 Salud</button>
+    <button class="tab" onclick="setCategory('fashion', this)">👗 Moda</button>
+    <button class="tab" onclick="setCategory('home', this)">🏠 Hogar</button>
+    <button class="tab" onclick="setCategory('fitness', this)">💪 Fitness</button>
+    <button class="tab" onclick="setCategory('travel', this)">✈️ Viajes</button>
+    <button class="tab" onclick="setCategory('entertainment', this)">🎨 Arte</button>
+    <button class="tab" onclick="setCategory('general', this)">🌐 General</button>
+  </div>
+  <div class="results-count" id="resultsCount"></div>
+</div>
+
+<div class="grid" id="productGrid"></div>
+
+<footer>
+  <p>© 2026 <a href="https://www.industriasplaneta.com" target="_blank">IndustriasPlaneta</a> Creando Herramientas · <a href="https://www.indplaneta.com" target="_blank">IndPlaneta</a> Health Care · <a href="https://www.industriasplaneta.com/inicio/partnership-program" target="_blank">Partnership Program</a> Partner Planeta · Programa de Afiliados</p>
+</footer>
+
+<script>
+const products = [
+  { id: 3022,  title: "SentryPC",              brand: "Spytech Software",  cat: "tech",          desc: "Software todo-en-uno para padres y empleadores: monitoreo, filtro de contenido y control de acceso.",                    link: "https://sentrypc.7eer.net/c/5637202/200311/3022" },
+  { id: 17409, title: "Imgmi",                  brand: "Skylum Software",   cat: "tech",          desc: "Promociona apps móviles iOS y Android y gana hasta 25% de comisión por cada referido.",                                  link: "https://imgmi.pxf.io/c/5637202/1472460/17409" },
+  { id: 9372,  title: "TechNitya",              brand: "marketXLS",         cat: "tech",          desc: "Plugins que ahorran tiempo para Office: traducción en Excel, utilidades y más.",                                          link: "https://technitya.sjv.io/c/5637202/565398/9372" },
+  { id: 5172,  title: "Arkuda Digital",         brand: "Arkuda Digital",    cat: "tech",          desc: "Comparte y disfruta todos tus medios desde Mac/iPhone/iPad a cualquier dispositivo compatible.",                          link: "https://arkmc.pxf.io/c/5637202/348881/5172" },
+  { id: 9315,  title: "eyeson",                 brand: "eyeson.team",       cat: "tech",          desc: "Plataforma de videollamadas sin instalación: streaming en vivo, grabación y compartir pantalla.",                          link: "https://eyeson.sjv.io/c/5637202/559443/9315" },
+  { id: 9560,  title: "Domain.com",             brand: "Domain.com",        cat: "business",      desc: "Registrador de dominios con hosting, SSL, email y herramientas de marketing para pequeños negocios.",                     link: "https://domain.mno8.net/c/5637202/577846/9560" },
+  { id: 9549,  title: "Vidranya",               brand: "Vidranya",          cat: "tech",          desc: "Automatiza tu estrategia en Pinterest para más seguidores y pines dirigidos.",                                            link: "https://vidranya.sjv.io/c/5637202/576931/9549" },
+  { id: 9634,  title: "Lenovo India",           brand: "Lenovo",            cat: "tech",          desc: "Tienda oficial Lenovo India: laptops, PCs, tablets y periféricos de las mejores marcas.",                                 link: "https://lenovo-in.zlvv.net/c/5637202/584269/9634" },
+  { id: 11745, title: "KKday",                  brand: "KKday",             cat: "travel",        desc: "Más de 10,000 experiencias de viaje: tours, actividades, transporte y más en todo el mundo.",                            link: "https://kkday.sjv.io/c/5637202/840050/11745" },
+  { id: 12108, title: "DHgate",                 brand: "DHgate",            cat: "general",       desc: "30 millones de productos: electrónicos, moda, bodas y más a precios muy competitivos.",                                  link: "https://dhgate.sjv.io/c/5637202/868543/12108" },
+  { id: 12511, title: "Meta Box",               brand: "eLightUp",          cat: "tech",          desc: "El plugin más completo para desarrolladores WordPress: campos personalizados rápidos y simples.",                          link: "https://metabox.sjv.io/c/5637202/914269/12511" },
+  { id: 16052, title: "Slim SEO",               brand: "eLightUp",          cat: "tech",          desc: "Plugin SEO completo para WordPress: rápido, sin bloat y con configuración mínima.",                                       link: "https://slim-seo.sjv.io/c/5637202/1328334/16052" },
+  { id: 14044, title: "OnePlus FR",             brand: "OnePlus",           cat: "tech",          desc: "OnePlus Francia: smartphones que rompen límites de tecnología. Never Settle.",                                            link: "https://oneplusfr.sjv.io/c/5637202/1103247/14044" },
+  { id: 12602, title: "Stylevana AU",           brand: "Stylevana",         cat: "beauty",        desc: "Tienda online de moda y productos de belleza asiáticos accesibles para todo el mundo.",                                   link: "https://stylevana-au.sjv.io/c/5637202/926030/12602" },
+  { id: 13235, title: "Naturecan UK",           brand: "Naturecan",         cat: "health",        desc: "Marca líder en bienestar: skincare premium y suplementos NMN con comisiones flexibles.",                                  link: "https://naturecan-uk.pxf.io/c/5637202/1009713/13235" },
+  { id: 13624, title: "Shopify",                brand: "Shopify Inc.",      cat: "business",      desc: "Ayuda a tu audiencia a crear negocios exitosos en Shopify y gana comisiones competitivas.",                               link: "https://shopify.pxf.io/c/5637202/1061744/13624" },
+  { id: 20231, title: "MindManager",            brand: "Parallels",         cat: "business",      desc: "Solución definitiva para pensar, planificar y colaborar con herramientas intuitivas de mapas mentales.",                  link: "https://mindmanager.sjv.io/c/5637202/1740331/20231" },
+  { id: 14559, title: "Prop Money Inc.",        brand: "Prop Money",        cat: "entertainment", desc: "Dinero falso de utilería usado en películas, TV, videos musicales y publicidad. Envío mundial.",                         link: "https://propmoneyinc.pxf.io/c/5637202/1151627/14559" },
+  { id: 14994, title: "Kikoff",                 brand: "Kikoff",            cat: "business",      desc: "Más de 1 millón de usuarios han mejorado su crédito con planes accesibles que reportan a las 3 burós.",                  link: "https://kikoff.pxf.io/c/5637202/1198412/14994" },
+  { id: 15155, title: "UPERFECT",               brand: "UPERFECT",          cat: "tech",          desc: "Monitores portátiles y LapDocks de calidad para productividad en cualquier lugar.",                                       link: "https://uperfect.sjv.io/c/5637202/1226533/15155" },
+  { id: 15852, title: "FitVille",               brand: "FitVille",          cat: "health",        desc: "Calzado avanzado con tecnología de soporte terapéutico para un estilo de vida activo y saludable.",                      link: "https://thefitville.pxf.io/c/5637202/1294267/15852" },
+  { id: 16665, title: "Dymocks",                brand: "Dymocks",           cat: "entertainment", desc: "143 años ayudando a australianos a encontrar el libro perfecto. 50 tiendas y 13 millones de libros.",                    link: "https://dymocks-australia.pxf.io/c/5637202/1398797/16665" },
+  { id: 16952, title: "Vida Glow US",           brand: "Vida Glow",         cat: "beauty",        desc: "Especialistas en soluciones de belleza activa y suplementos ingeribles científicamente formulados.",                      link: "https://vida-glow-us.pxf.io/c/5637202/1423556/16952" },
+  { id: 17059, title: "Modlily",                brand: "Modlily",           cat: "fashion",       desc: "Tienda online de ropa para mujer con 13 años de experiencia. Clientes en USA, Canadá, Australia y UK.",                  link: "https://modlily.sjv.io/c/5637202/1436026/17059" },
+  { id: 17091, title: "Bluetti EU",             brand: "BLUETTI",           cat: "tech",          desc: "Soluciones innovadoras de energía portátil: generadores solares y paneles para vida off-grid.",                           link: "https://bluettieu.pxf.io/c/5637202/1438165/17091" },
+  { id: 17095, title: "Bluetti FR",             brand: "BLUETTI",           cat: "tech",          desc: "BLUETTI: une façon de vivre, une philosophie de conception pour une meilleure Terre.",                                    link: "https://bluettifr.pxf.io/c/5637202/1438181/17095" },
+  { id: 17108, title: "Bluetti US",             brand: "BLUETTI",           cat: "tech",          desc: "BLUETTI: a way of life, a design philosophy. Portable and powerful electricity anywhere.",                               link: "https://bluettius.sjv.io/c/5637202/1439830/17108" },
+  { id: 17133, title: "Tru Grit Fitness",       brand: "Tru Grit",          cat: "fitness",       desc: "Equipos de fitness de grado profesional a precios accesibles para todos los niveles.",                                    link: "https://trugritfitness.pxf.io/c/5637202/1442992/17133" },
+  { id: 17189, title: "Lumibricks",             brand: "Lumibricks",        cat: "entertainment", desc: "Juguetes de construcción únicos con kits de luces compatibles. Regalos perfectos para adultos.",                          link: "https://funwhole.sjv.io/c/5637202/1448255/17189" },
+  { id: 17190, title: "Lightailing",            brand: "Lightailing",       cat: "entertainment", desc: "Kits de luces LED que hacen brillar tus sets de bloques en la oscuridad.",                                                link: "https://lightailing.sjv.io/c/5637202/1448258/17190" },
+  { id: 17423, title: "Inspiration",            brand: "TechEdology",       cat: "business",      desc: "Herramienta premiada de mapas visuales para organización y planificación creativa.",                                      link: "https://inspirationaffiliateprogramme.sjv.io/c/5637202/1474461/17423" },
+  { id: 17634, title: "Ship7",                  brand: "Ship7",             cat: "general",       desc: "Más de 200,000 clientes reciben sus paquetes internacionales seguros cada día.",                                          link: "https://ship7com.pxf.io/c/5637202/1495182/17634" },
+  { id: 17885, title: "Natural Cycles",         brand: "Natural Cycles",    cat: "health",        desc: "Primera app certificada por la FDA como método anticonceptivo. Empodera la salud femenina.",                             link: "https://natural-cycles.sjv.io/c/5637202/1530057/17885" },
+  { id: 17916, title: "jAlbum",                 brand: "jAlbum AB",         cat: "tech",          desc: "Software para crear galerías web de fotos y videos para tu sitio sin servicios centralizados.",                           link: "https://jalbum-affiliate-program.sjv.io/c/5637202/1531950/17916" },
+  { id: 18024, title: "Eufy",                   brand: "Eufy by Anker",     cat: "home",          desc: "Aspiradoras, cámaras de seguridad y monitores para bebé. Amado por 5 millones de familias.",                             link: "https://eufy.sjv.io/c/5637202/1543970/18024" },
+  { id: 18069, title: "Puzzle Ready",           brand: "eBrands",           cat: "entertainment", desc: "Tablero para guardar puzzles de forma segura sin perder piezas. Ideal como regalo.",                                      link: "https://puzzlereadyaffiliateprogram.pxf.io/c/5637202/1549130/18069" },
+  { id: 18086, title: "Happy Sinks",            brand: "Happy Sinks",       cat: "home",          desc: "Productos sostenibles para limpieza y organización del hogar. Felicidad y sustentabilidad.",                             link: "https://happy-sinks-eu.sjv.io/c/5637202/1549971/18086" },
+  { id: 18088, title: "INDO Trick Scooter",     brand: "INDO",              cat: "fitness",       desc: "Patinete de alta calidad para trucos: en casa, exterior, skate parks y trampolín.",                                       link: "https://indo-tricks-scooter.sjv.io/c/5637202/1549977/18088" },
+  { id: 18089, title: "Coach Soak",             brand: "Coach Soak",        cat: "fitness",       desc: "Sales de baño con magnesio para recuperación muscular. Productos naturales para atletas.",                               link: "https://coach-soak.sjv.io/c/5637202/1549982/18089" },
+  { id: 18090, title: "Bodyotics",              brand: "Bodyotics",         cat: "health",        desc: "Los mejores productos Kegel para mejorar la salud del suelo pélvico en mujeres.",                                         link: "https://bodyotics.sjv.io/c/5637202/1549984/18090" },
+  { id: 18091, title: "Fofana",                 brand: "Fofana",            cat: "fitness",       desc: "Tiendas POD, tiendas para camionetas y cursos ninja para niños. Aventura al máximo.",                                     link: "https://fofana.sjv.io/c/5637202/1549986/18091" },
+  { id: 18359, title: "Big Bat Box",            brand: "Big Bat Box",       cat: "home",          desc: "Lleva la naturaleza a tu jardín con cajas seguras para murciélagos. Ecosistema en tu patio.",                            link: "https://big-bat-box.pxf.io/c/5637202/1582173/18359" },
+  { id: 18360, title: "Striking Viking",        brand: "Striking Viking",   cat: "beauty",        desc: "Productos premium para barba y cabello diseñados y usados por barberos profesionales.",                                   link: "https://viking-beard-gear.pxf.io/c/5637202/1582181/18360" },
+  { id: 18361, title: "Mioeco",                 brand: "Mioeco",            cat: "home",          desc: "Productos ecológicos para el hogar: envoltorios de cera de abeja, toallas reutilizables y más.",                         link: "https://mioeco.sjv.io/c/5637202/1582184/18361" },
+  { id: 18531, title: "Pure Scentum",           brand: "Pure Scentum",      cat: "beauty",        desc: "Bombas de baño artesanales: cruelty-free, naturales y lujosas. Fabricadas en USA y UK.",                                 link: "https://pure-scentum.pxf.io/c/5637202/1597424/18531" },
+  { id: 18532, title: "Hieno",                  brand: "Hieno",             cat: "entertainment", desc: "Materiales de arte y educación sostenibles para niños y artistas en casa o en la escuela.",                              link: "https://hieno-supplies.sjv.io/c/5637202/1597427/18532" },
+  { id: 18533, title: "Ontaki",                 brand: "Ontaki",            cat: "general",       desc: "Tijeras artísticas de durabilidad excepcional fabricadas por maestros artesanos especializados.",                         link: "https://ontaki.pxf.io/c/5637202/1597430/18533" },
+  { id: 18534, title: "Asebbo",                 brand: "Asebbo",            cat: "general",       desc: "Bolsas de almuerzo duraderas, funcionales y con estilo que hacen la diferencia en tu día.",                              link: "https://asebbo.pxf.io/c/5637202/1597432/18534" },
+  { id: 18535, title: "Byre",                   brand: "Byre",              cat: "health",        desc: "Almohadas de lujo para aliviar dolores: embarazo, cirugía, dolor crónico y lesiones deportivas.",                        link: "https://byre-group.pxf.io/c/5637202/1597434/18535" },
+  { id: 18536, title: "Hana Emi",               brand: "Hana Emi",          cat: "beauty",        desc: "Herramientas de masaje naturales de Asia: cuarzo rosa, piedras bian y masajeadores de hielo.",                           link: "https://hana-emi.pxf.io/c/5637202/1597459/18536" },
+  { id: 18660, title: "Baby Deep Sleep",        brand: "Baby Deep Sleep",   cat: "health",        desc: "Sacos de dormir con peso que calman a los bebés para un sueño más reparador y seguro.",                                  link: "https://babydeepsleep.pxf.io/c/5637202/1608958/18660" },
+  { id: 18662, title: "Cloudfield",             brand: "Cloudfield",        cat: "beauty",        desc: "Lentes de bambú y bloqueadores de luz azul: ecológicos, duraderos y con gran diseño.",                                   link: "https://cloudfield.pxf.io/c/5637202/1608962/18662" },
+  { id: 18664, title: "GAFLY",                  brand: "GAFLY",             cat: "health",        desc: "Juguetes y herramientas sensoriales para niños con autismo y dificultades de procesamiento.",                            link: "https://gafly.pxf.io/c/5637202/1608966/18664" },
+  { id: 18668, title: "Silginnes",              brand: "Silginnes",         cat: "home",          desc: "Herramientas para el hogar y manijas de grifo de cerveza artesanales.",                                                   link: "https://silginnes.sjv.io/c/5637202/1608972/18668" },
+  { id: 18671, title: "Throwback Traits",       brand: "Throwback Traits",  cat: "fashion",       desc: "Ropa para personas apasionadas por la vida, la aventura y la fortaleza mental.",                                          link: "https://throwback-traits.pxf.io/c/5637202/1609234/18671" },
+  { id: 24273, title: "Angles90",               brand: "Angles90",          cat: "fitness",       desc: "Grips patentados para ejercicio ergonómico: reduce tensión en articulaciones y estimula músculo.",                        link: "https://angles90.sjv.io/c/5637202/1979996/24273" },
+  { id: 24275, title: "Lux Grip Socks",         brand: "Lux",               cat: "fitness",       desc: "Calcetines con grip para fútbol, running, yoga y gym. Tu pie no resbala, más potencia.",                                 link: "https://lux.sjv.io/c/5637202/1980001/24275" },
+  { id: 24278, title: "Charlemagne",            brand: "Charlemagne",       cat: "beauty",        desc: "Productos premium de barba y cabello diseñados por barberos para barberos.",                                              link: "https://charlemange.pxf.io/c/5637202/1980006/24278" },
+  { id: 24279, title: "Baby Sunnies",           brand: "Baby Sunnies",      cat: "health",        desc: "Lentes 100% protectores UV para bebés y niños pequeños. Marco de silicona flexible irrompible.",                         link: "https://babysunnies.pxf.io/c/5637202/1980009/24279" },
+  { id: 18134, title: "MushroomSupplies",       brand: "MushroomSupplies",  cat: "health",        desc: "Kits todo-en-uno para cultivar hongos medicinales. Fácil para principiantes y cultivadores comerciales.",                 link: "https://mushroom-supplies.sjv.io/c/5637202/1554002/18134" },
+  { id: 18544, title: "TWOPAGES Curtains",      brand: "TWOPAGES",          cat: "home",          desc: "Cortinas a medida online. Más de 400,000 hogares satisfechos desde 2015.",                                               link: "https://twopages.pxf.io/c/5637202/1597849/18544" },
+  { id: 32511, title: "oyrosy",                 brand: "oyrosy",            cat: "fashion",       desc: "Marca de moda femenina que mezcla estilo western con flair urbano moderno.",                                              link: "https://oyrosycom.sjv.io/c/5637202/2820691/32511" },
+  { id: 21022, title: "Ulike UK",               brand: "Ulike",             cat: "beauty",        desc: "Dispositivos IPL de grado médico para depilación permanente y cuidado de piel. 4M+ vendidos.",                           link: "https://ukulike.sjv.io/c/5637202/1781198/21022" },
+  { id: 21023, title: "Ulike DE",               brand: "Ulike",             cat: "beauty",        desc: "Schmerzfreie IPL-Haarentfernung in medizinischer Qualität. Über 4 Millionen verkaufte Geräte.",                          link: "https://deulike.pxf.io/c/5637202/1781226/21023" },
+  { id: 21135, title: "Onemile",                brand: "Onemile",           cat: "tech",          desc: "Vehículos de nueva energía para micro-movilidad urbana. Fundada en 2017.",                                                link: "https://onemilebike.sjv.io/c/5637202/1787045/21135" },
+  { id: 21253, title: "A-Premium Auto Parts",   brand: "A-Premium",         cat: "general",       desc: "Más de 10 años proveyendo refacciones de calidad a precios accesibles. Reparaciones simples.",                           link: "https://apremium.sjv.io/c/5637202/1793322/21253" },
+  { id: 31970, title: "Ugreen",                 brand: "UGREEN",            cat: "tech",          desc: "Accesorios digitales desde 2012: cargadores, accesorios para teléfono, computadora y auto.",                             link: "https://ugreen.pxf.io/c/5637202/2787919/31970" },
+  { id: 21290, title: "VersaDesk",              brand: "VersaDesk",         cat: "home",          desc: "Escritorios sit-stand totalmente eléctricos para mayor comodidad y productividad en casa u oficina.",                    link: "https://versadesk.pxf.io/c/5637202/1796287/21290" },
+  { id: 21526, title: "RAVPower",               brand: "RAVPower",          cat: "tech",          desc: "Cargadores innovadores con diseño contemporáneo y soporte de primera clase. Fundada en 2011.",                           link: "https://zebaoaffiliateprogram.pxf.io/c/5637202/1809767/21526" },
+  { id: 21553, title: "ParisRhone",             brand: "ParisRhone",        cat: "home",          desc: "Aspiradoras, pulidoras y moledoras de café vendidas en más de 30 países.",                                               link: "https://parisrhonecom.sjv.io/c/5637202/1811170/21553" },
+  { id: 21554, title: "Aspiron",                brand: "Aspiron",           cat: "home",          desc: "Marca pionera francesa desde 1925 en aspiradoras y productos de limpieza a vapor.",                                      link: "https://aspironcom.sjv.io/c/5637202/1811185/21554" },
+  { id: 21771, title: "Tidio",                  brand: "Tidio",             cat: "business",      desc: "Plataforma de experiencia del cliente para tiendas online: convierte visitantes en compradores.",                         link: "https://tidio.pxf.io/c/5637202/1826568/21771" },
+  { id: 22181, title: "Pelago",                 brand: "Singapore Airlines", cat: "travel",       desc: "200,000+ actividades en 3,000 destinos. Tours, transporte, F1 y más con las mejores comisiones.",                       link: "https://pelago.pxf.io/c/5637202/1851844/22181" },
+  { id: 22474, title: "CapCut Pro",             brand: "CapCut",            cat: "tech",          desc: "Gana hasta $15,000 refiriendo CapCut Pro. Herramientas de edición con IA y templates creativos.",                        link: "https://capcutaffiliateprogram.pxf.io/c/5637202/1876054/22474" },
+  { id: 22744, title: "Automattic",             brand: "Automattic",        cat: "business",      desc: "WordPress.com, WooCommerce, Jetpack y Pressable para crear y hacer crecer sitios web.",                                  link: "https://automattic.pxf.io/c/5637202/1900456/22744" },
+];
+
+const catLabels = {
+  tech:'Tech', business:'Negocios', beauty:'Belleza', health:'Salud',
+  fashion:'Moda', home:'Hogar', fitness:'Fitness', travel:'Viajes',
+  entertainment:'Arte', general:'General'
+};
+
+let currentCat = 'all';
+
+function setCategory(cat, el) {
+  currentCat = cat;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  filterProducts();
+}
+
+function filterProducts() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = products.filter(p => {
+    const matchCat = currentCat === 'all' || p.cat === currentCat;
+    const matchQ = !q || p.title.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) || catLabels[p.cat]?.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
+  renderGrid(filtered);
+}
+
+function renderGrid(list) {
+  const grid = document.getElementById('productGrid');
+  const count = document.getElementById('resultsCount');
+  count.innerHTML = `<strong>${list.length}</strong> productos encontrados`;
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty"><h3>Sin resultados</h3><p>Intenta con otro término o categoría.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map((p, i) => {
+    const initial = p.title.charAt(0).toUpperCase();
+    const delay = (i % 12) * 40;
+    return `
+    <div class="card" style="animation-delay:${delay}ms">
+      <div class="card-header">
+        <div class="brand-logo">
+          <img src="https://www.google.com/s2/favicons?domain=${new URL(p.link).hostname}&sz=64"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+               alt="${p.brand}">
+          <span class="fallback" style="display:none">${initial}</span>
+        </div>
+        <div class="card-meta">
+          <div class="card-brand">${p.brand}</div>
+          <span class="category-tag cat-${p.cat}">${catLabels[p.cat] || p.cat}</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${p.title}</div>
+        <div class="card-desc">${p.desc}</div>
+      </div>
+      <div class="card-footer">
+        <a class="cta-btn" href="${p.link}" target="_blank" rel="noopener">Ver oferta →</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Init
+filterProducts();
+</script>
+</body>
+</html>
