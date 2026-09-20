@@ -139,7 +139,7 @@
 <div class="grid" id="productGrid">
   <div class="loading">
     <div class="spinner"></div>
-    <p>Cargando campañas desde Impact.com...</p>
+    <p>Cargando campañas...</p>
   </div>
 </div>
 
@@ -185,7 +185,7 @@ async function loadCampaigns() {
     }));
 
     // Update badge
-    document.getElementById('heroBadge').textContent = `${allProducts.length} marcas activas · Impact.com`;
+    document.getElementById('heroBadge').textContent = `${allProducts.length} marcas activas ·`;
     document.getElementById('headerMeta').textContent = 'Catálogo de Afiliados';
 
     filterProducts();
