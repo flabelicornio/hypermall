@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Studios Audiovisual — Tienda de Afiliados</title>
+<title>Partner Planeta — Tienda de Afiliados</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -138,12 +138,12 @@
 <body>
 
 <header>
-  <div class="logo">HyperMall <span>•</span>STUDIOS AUDIOVISUAL</div>
+  <div class="logo">Partner<span>•</span>Planeta</div>
   <div class="header-meta" id="headerMeta">Cargando catálogo...</div>
 </header>
 
 <section class="hero">
-  <div class="badge" id="heroBadge">Conectando...</div>
+  <div class="badge" id="heroBadge">Conectando con Impact.com...</div>
   <h1 style="margin-top:24px">Descubre las mejores<br><em>marcas del mundo</em></h1>
   <p>Accede a productos y servicios seleccionados de marcas globales. Cada enlace es una oportunidad.</p>
 </section>
@@ -172,12 +172,12 @@
 <div class="grid" id="productGrid">
   <div class="loading">
     <div class="spinner"></div>
-    <p>Cargando campañas...</p>
+    <p>Cargando campañas desde Impact.com...</p>
   </div>
 </div>
 
 <footer>
-  <p>© 2026 <a href="https://www.studiosaudiovisual.com" target="_blank">STUDIOS AUDIOVISUAL</a> · Partner — Programa de Afiliados · <a href="https://industriasplaneta.com/inicio/partnership-program" target="_blank">Únete al programa</a></p>
+  <p>© 2026 <a href="https://industriasplaneta.com" target="_blank">indPlaneta</a> · Partner Planeta — Programa de Afiliados · <a href="https://industriasplaneta.com/inicio/partnership-program" target="_blank">Únete al programa</a></p>
 </footer>
 
 <!-- EXPORT PANEL (oculto, Ctrl+Shift+E) -->
@@ -247,7 +247,7 @@ async function loadCampaigns() {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     allProducts = data.map(p => ({ ...p, cat: guessCategory(p) }));
-    document.getElementById('heroBadge').textContent = `${allProducts.length} marcas activas · STUDIOS AUDIOVISUAL`;
+    document.getElementById('heroBadge').textContent = `${allProducts.length} marcas activas · Impact.com`;
     document.getElementById('headerMeta').textContent = 'Catálogo de Afiliados';
     filterProducts();
   } catch (err) {
