@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StudiosAudiovisual — Tienda de Afiliados</title>
+<title>Partner Planeta — Tienda de Afiliados</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -21,12 +21,7 @@
   html { scroll-behavior: smooth; }
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
-  header {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(10,10,15,0.92); backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-    padding: 16px 32px; display: flex; align-items: center; justify-content: space-between;
-  }
+  header { position: sticky; top: 0; z-index: 100; background: rgba(10,10,15,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
   .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.02em; }
   .logo span { -webkit-text-fill-color: var(--gold); }
   .header-meta { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
@@ -54,7 +49,6 @@
   .results-count strong { color: var(--text); }
 
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 0 32px 64px; max-width: 1400px; margin: 0 auto; }
-
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s; animation: fadeUp 0.4s ease both; }
   .card:hover { transform: translateY(-4px); border-color: rgba(124,92,252,0.5); box-shadow: 0 8px 32px rgba(124,92,252,0.15); }
   @keyframes fadeUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
@@ -93,11 +87,50 @@
   footer { border-top: 1px solid var(--border); padding: 24px 32px; text-align: center; color: var(--muted); font-size: 0.8rem; }
   footer a { color: var(--accent2); text-decoration: none; }
 
+  /* ── EXPORT PANEL ───────────────────────────────────────────── */
+  #exportOverlay {
+    display: none; position: fixed; inset: 0; z-index: 999;
+    background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+    align-items: center; justify-content: center;
+  }
+  #exportOverlay.open { display: flex; }
+  #exportPanel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 36px; width: 480px; max-width: 95vw;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+    animation: fadeUp 0.3s ease;
+  }
+  #exportPanel h2 { font-family: 'Syne', sans-serif; font-size: 1.2rem; margin-bottom: 6px; }
+  #exportPanel p { color: var(--muted); font-size: 0.85rem; margin-bottom: 24px; line-height: 1.5; }
+  .export-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .export-btn {
+    padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text); cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500;
+    text-align: left; transition: border-color 0.2s, background 0.2s;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .export-btn:hover { border-color: var(--accent); background: rgba(124,92,252,0.08); }
+  .export-btn .btn-icon { font-size: 1.4rem; }
+  .export-btn .btn-label { font-weight: 600; }
+  .export-btn .btn-desc { font-size: 0.75rem; color: var(--muted); }
+  .export-close {
+    width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .export-close:hover { color: var(--text); }
+  .export-stats { display: flex; gap: 16px; margin-bottom: 24px; }
+  .stat-chip { background: rgba(124,92,252,0.1); border: 1px solid rgba(124,92,252,0.2); border-radius: 8px; padding: 8px 12px; font-size: 0.78rem; color: var(--accent2); }
+  .stat-chip strong { display: block; font-size: 1.1rem; color: var(--text); font-family: 'Syne', sans-serif; }
+
   @media(max-width:600px) {
     header { padding: 12px 16px; }
     .hero { padding: 48px 16px 32px; }
     .filters-wrap { padding: 0 16px 24px; }
     .grid { padding: 0 16px 48px; gap: 14px; grid-template-columns: 1fr 1fr; }
+    .export-grid { grid-template-columns: 1fr; }
   }
   @media(max-width:400px) { .grid { grid-template-columns: 1fr; } }
 </style>
@@ -105,14 +138,14 @@
 <body>
 
 <header>
-  <div class="logo">Mall<span> | </span>StudiosAudioisual</div>
+  <div class="logo">Partner<span>•</span>Planeta</div>
   <div class="header-meta" id="headerMeta">Cargando catálogo...</div>
 </header>
 
 <section class="hero">
-  <div class="badge" id="heroBadge">Conectando...</div>
+  <div class="badge" id="heroBadge">Conectando con Impact.com...</div>
   <h1 style="margin-top:24px">Descubre las mejores<br><em>marcas del mundo</em></h1>
-  <p>Accede a descuentos únicos de productos y servicios seleccionados de marcas globales.<br>Cada enlace es una oportunidad.</p>
+  <p>Accede a productos y servicios seleccionados de marcas globales. Cada enlace es una oportunidad.</p>
 </section>
 
 <div class="filters-wrap">
@@ -120,7 +153,7 @@
     <span class="search-icon">🔍</span>
     <input type="text" id="searchInput" placeholder="Buscar marca o categoría..." oninput="filterProducts()">
   </div>
-  <div class="filter-tabs" id="filterTabs">
+  <div class="filter-tabs">
     <button class="tab active" onclick="setCategory('all', this)">Todos</button>
     <button class="tab" onclick="setCategory('tech', this)">💻 Tech</button>
     <button class="tab" onclick="setCategory('business', this)">💼 Negocios</button>
@@ -139,13 +172,49 @@
 <div class="grid" id="productGrid">
   <div class="loading">
     <div class="spinner"></div>
-    <p>Cargando campañas...</p>
+    <p>Cargando campañas desde Impact.com...</p>
   </div>
 </div>
 
 <footer>
   <p>© 2026 <a href="https://industriasplaneta.com" target="_blank">indPlaneta</a> · Partner Planeta — Programa de Afiliados · <a href="https://industriasplaneta.com/inicio/partnership-program" target="_blank">Únete al programa</a></p>
 </footer>
+
+<!-- EXPORT PANEL (oculto, Ctrl+Shift+E) -->
+<div id="exportOverlay" onclick="closeExport(event)">
+  <div id="exportPanel">
+    <h2>⬇️ Exportar Catálogo</h2>
+    <p>Exporta todas las campañas activas con assets incluidos. Usa el CSV para Facebook Commerce Manager.</p>
+    <div class="export-stats">
+      <div class="stat-chip"><strong id="statTotal">—</strong>campañas</div>
+      <div class="stat-chip"><strong id="statCats">—</strong>categorías</div>
+      <div class="stat-chip"><strong id="statLogos">—</strong>con logo</div>
+    </div>
+    <div class="export-grid">
+      <button class="export-btn" onclick="exportCSV()">
+        <span class="btn-icon">📊</span>
+        <span class="btn-label">CSV — Facebook</span>
+        <span class="btn-desc">Listo para Commerce Manager</span>
+      </button>
+      <button class="export-btn" onclick="exportJSON()">
+        <span class="btn-icon">🗂️</span>
+        <span class="btn-label">JSON completo</span>
+        <span class="btn-desc">Todos los campos de Impact</span>
+      </button>
+      <button class="export-btn" onclick="exportLinks()">
+        <span class="btn-icon">🔗</span>
+        <span class="btn-label">Solo links</span>
+        <span class="btn-desc">Tracking links por marca</span>
+      </button>
+      <button class="export-btn" onclick="exportAssets()">
+        <span class="btn-icon">🖼️</span>
+        <span class="btn-label">Assets / Logos</span>
+        <span class="btn-desc">URLs de imágenes y logos</span>
+      </button>
+    </div>
+    <button class="export-close" onclick="closeExport()">Cerrar · ESC</button>
+  </div>
+</div>
 
 <script>
 const catLabels = {
@@ -154,15 +223,14 @@ const catLabels = {
   entertainment:'Arte', general:'General'
 };
 
-// Auto-categorize based on keywords in title/desc/brand
 function guessCategory(p) {
   const text = `${p.title} ${p.brand} ${p.desc}`.toLowerCase();
-  if (/shopify|wordpress|tidio|business|crm|erp|saas|software|app|plugin|seo|marketing|email|hosting|domain|kikoff|credit|mindmanager|automattic|woocommerce/.test(text)) return 'business';
-  if (/laptop|phone|monitor|charger|usb|tech|digital|computer|iphone|android|bluetti|solar|power|battery|ugreen|ravpower|capcut|video|camera|eyeson|lenovo|oneplus|uperfect|onemile|versadesk|parisrhone|aspiron|sentry|imgmi|technitya|arkuda|jalbum|vidranya|metabox|slim seo/.test(text)) return 'tech';
+  if (/shopify|wordpress|tidio|business|crm|saas|software|app|plugin|seo|marketing|hosting|domain|kikoff|credit|mindmanager|automattic|woocommerce/.test(text)) return 'business';
+  if (/laptop|phone|monitor|charger|usb|tech|digital|computer|android|bluetti|solar|power|battery|ugreen|ravpower|capcut|video|camera|eyeson|lenovo|oneplus|uperfect|onemile|versadesk|parisrhone|aspiron|sentry|imgmi|technitya|arkuda|jalbum|vidranya|metabox|slim seo/.test(text)) return 'tech';
   if (/beauty|skin|hair|makeup|cosmetic|glow|ulike|ipl|hana|massage|cloudfield|striking viking|charlemagne|pure scentum|stylevana|naturecan|vida glow|bodyotics/.test(text)) return 'beauty';
-  if (/health|nutrition|fitness|supplement|sleep|baby|kegel|mushroom|natural cycles|fitville|gafly|byre|coach soak/.test(text)) return 'health';
+  if (/health|nutrition|supplement|sleep|baby|kegel|mushroom|natural cycles|fitville|gafly|byre|coach soak/.test(text)) return 'health';
   if (/fashion|clothes|dress|shirt|shoe|style|modlily|throwback|oyrosy|lux/.test(text)) return 'fashion';
-  if (/home|curtain|kitchen|garden|house|eufy|twopages|happy sinks|mioeco|big bat|silginnes|versadesk/.test(text)) return 'home';
+  if (/home|curtain|kitchen|garden|house|eufy|twopages|happy sinks|mioeco|big bat|silginnes/.test(text)) return 'home';
   if (/fitness|gym|sport|exercise|workout|tru grit|angles90|indo|fofana/.test(text)) return 'fitness';
   if (/travel|tour|trip|kkday|pelago|ship7/.test(text)) return 'travel';
   if (/art|book|puzzle|light|lumi|hieno|dymocks|prop money/.test(text)) return 'entertainment';
@@ -178,23 +246,12 @@ async function loadCampaigns() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     if (data.error) throw new Error(data.error);
-
-    allProducts = data.map(p => ({
-      ...p,
-      cat: guessCategory(p)
-    }));
-
-    // Update badge
-    document.getElementById('heroBadge').textContent = `${allProducts.length} marcas activas ·`;
+    allProducts = data.map(p => ({ ...p, cat: guessCategory(p) }));
+    document.getElementById('heroBadge').textContent = `${allProducts.length} marcas activas · Impact.com`;
     document.getElementById('headerMeta').textContent = 'Catálogo de Afiliados';
-
     filterProducts();
   } catch (err) {
-    document.getElementById('productGrid').innerHTML = `
-      <div class="error-msg">
-        <p>⚠️ Error cargando campañas: ${err.message}</p>
-        <p style="font-size:0.8rem;margin-top:8px;color:#7878a0">Intenta recargar la página</p>
-      </div>`;
+    document.getElementById('productGrid').innerHTML = `<div class="error-msg"><p>⚠️ Error: ${err.message}</p><p style="font-size:0.8rem;margin-top:8px;color:#7878a0">Intenta recargar la página</p></div>`;
     document.getElementById('heroBadge').textContent = 'Error de conexión';
   }
 }
@@ -220,25 +277,13 @@ function renderGrid(list) {
   const grid = document.getElementById('productGrid');
   const count = document.getElementById('resultsCount');
   count.innerHTML = `<strong>${list.length}</strong> productos encontrados`;
-
-  if (!list.length) {
-    grid.innerHTML = `<div class="empty"><h3>Sin resultados</h3><p>Intenta con otro término o categoría.</p></div>`;
-    return;
-  }
-
+  if (!list.length) { grid.innerHTML = `<div class="empty"><h3>Sin resultados</h3><p>Intenta con otro término o categoría.</p></div>`; return; }
   grid.innerHTML = list.map((p, i) => {
     const initial = p.title.charAt(0).toUpperCase();
     const delay = (i % 12) * 40;
-    const catLabel = catLabels[p.cat] || p.cat;
-
-    // Use CampaignLogoUri if available, fallback to favicon
     let logoSrc = '';
-    if (p.logo && p.logo.startsWith('http')) {
-      logoSrc = p.logo;
-    } else if (p.link) {
-      try { logoSrc = `https://www.google.com/s2/favicons?domain=${new URL(p.link).hostname}&sz=64`; } catch(e) {}
-    }
-
+    if (p.logo && p.logo.startsWith('http')) logoSrc = p.logo;
+    else if (p.link) { try { logoSrc = `https://www.google.com/s2/favicons?domain=${new URL(p.link).hostname}&sz=64`; } catch(e) {} }
     return `
     <div class="card" style="animation-delay:${delay}ms">
       <div class="card-header">
@@ -247,12 +292,12 @@ function renderGrid(list) {
         </div>
         <div class="card-meta">
           <div class="card-brand">${p.brand}</div>
-          <span class="category-tag cat-${p.cat}">${catLabel}</span>
+          <span class="category-tag cat-${p.cat}">${catLabels[p.cat]||p.cat}</span>
         </div>
       </div>
       <div class="card-body">
         <div class="card-title">${p.title}</div>
-        <div class="card-desc">${p.desc || 'Programa de afiliados activo.'}</div>
+        <div class="card-desc">${p.desc||'Programa de afiliados activo.'}</div>
       </div>
       <div class="card-footer">
         <a class="cta-btn" href="${p.link}" target="_blank" rel="noopener">Ver oferta →</a>
@@ -261,7 +306,75 @@ function renderGrid(list) {
   }).join('');
 }
 
-// Boot
+// ── EXPORT FUNCTIONS ─────────────────────────────────────────────
+function openExport() {
+  const overlay = document.getElementById('exportOverlay');
+  overlay.classList.add('open');
+  const withLogos = allProducts.filter(p => p.logo && p.logo.startsWith('http')).length;
+  const cats = new Set(allProducts.map(p => p.cat)).size;
+  document.getElementById('statTotal').textContent = allProducts.length;
+  document.getElementById('statCats').textContent = cats;
+  document.getElementById('statLogos').textContent = withLogos;
+}
+
+function closeExport(e) {
+  if (!e || e.target === document.getElementById('exportOverlay')) {
+    document.getElementById('exportOverlay').classList.remove('open');
+  }
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportCSV() {
+  const headers = ['id','title','description','availability','condition','price','link','image_link','brand','google_product_category','custom_label_0'];
+  const rows = allProducts.map(p => [
+    p.id,
+    `"${(p.title||'').replace(/"/g,'""')}"`,
+    `"${(p.desc||'').replace(/"/g,'""').slice(0,500)}"`,
+    'in stock',
+    'new',
+    '0.00 USD',
+    p.link||'',
+    p.logo||`https://www.google.com/s2/favicons?domain=${(() => { try { return new URL(p.link).hostname } catch(e) { return '' } })()}&sz=128`,
+    `"${(p.brand||'').replace(/"/g,'""')}"`,
+    '5085',
+    p.cat||'general'
+  ]);
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  downloadFile(csv, `partner-planeta-catalog-${new Date().toISOString().slice(0,10)}.csv`, 'text/csv');
+}
+
+function exportJSON() {
+  const json = JSON.stringify(allProducts, null, 2);
+  downloadFile(json, `partner-planeta-full-${new Date().toISOString().slice(0,10)}.json`, 'application/json');
+}
+
+function exportLinks() {
+  const lines = allProducts.map(p => `${p.title} | ${p.brand} | ${p.link}`).join('\n');
+  downloadFile(lines, `partner-planeta-links-${new Date().toISOString().slice(0,10)}.txt`, 'text/plain');
+}
+
+function exportAssets() {
+  const lines = ['title,brand,logo_url,campaign_url'];
+  allProducts.forEach(p => {
+    const logo = p.logo || `https://www.google.com/s2/favicons?domain=${(() => { try { return new URL(p.link).hostname } catch(e) { return '' } })()}&sz=128`;
+    lines.push(`"${p.title}","${p.brand}","${logo}","${p.url||p.link}"`);
+  });
+  downloadFile(lines.join('\n'), `partner-planeta-assets-${new Date().toISOString().slice(0,10)}.csv`, 'text/csv');
+}
+
+// ── KEYBOARD SHORTCUT Ctrl+Shift+E ───────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.shiftKey && e.key === 'E') { e.preventDefault(); openExport(); }
+  if (e.key === 'Escape') closeExport({ target: document.getElementById('exportOverlay') });
+});
+
 loadCampaigns();
 </script>
 </body>
