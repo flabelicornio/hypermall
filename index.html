@@ -239,7 +239,7 @@ async function loadCampaigns() {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     allProducts = data.map(p => ({ ...p, cat: guessCategory(p) }));
-    document.getElementById('heroBadge').textContent = `${allProducts.length} marcas activas · Impact.com`;
+    document.getElementById('heroBadge').textContent = `· ${allProducts.length} marcas activas ·`;
     document.getElementById('headerMeta').textContent = 'Catálogo de Afiliados';
     filterProducts();
   } catch (err) {
