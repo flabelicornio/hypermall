@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>catalogs.html - Generador de Tiendas Incrustables</title>
+<style>
+  :root{--bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--border:#2a2a3a;--accent:#7c5cfc;--accent2:#c084fc;--text:#e8e8f0;--muted:#7878a0;--green:#34d399}
+  *{box-sizing:border-box;margin:0;padding:0} body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);padding:20px;max-width:1100px;margin:0 auto}
+  h1{font-size:1.5rem} h1 span{color:var(--accent2)} p{color:var(--muted);font-size:0.9rem;margin:8px 0 16px;line-height:1.5}
+  .drop{border:2px dashed var(--border);border-radius:16px;padding:30px;text-align:center;background:var(--surface);cursor:pointer}
+  .drop.dragover{border-color:var(--accent);background:rgba(124,92,252,0.1)}
+  .row{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
+  .card-opt{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;flex:1;min-width:250px}
+  .card-opt h3{font-size:0.95rem;margin-bottom:6px} .card-opt input,.card-opt select{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;margin-top:6px}
+  .btn{padding:11px 18px;border-radius:10px;border:none;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--accent),#9f75ff);color:#fff}
+  .btn-sec{background:var(--surface2);border:1px solid var(--border);color:var(--text)} .btn:disabled{opacity:0.5}
+  .log{background:#000;border-radius:8px;padding:10px;font-family:monospace;font-size:0.78rem;max-height:160px;overflow:auto;white-space:pre-wrap;color:#9ca3af;margin-top:12px}
+  .code-box{background:#000;border:1px solid var(--border);border-radius:10px;padding:12px;margin:10px 0;position:relative}
+  .code-box pre{white-space:pre-wrap;word-break:break-all;font-size:0.8rem;color:#a5b4fc;max-height:200px;overflow:auto}
+  .copy-btn{position:absolute;top:8px;right:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:0.75rem}
+  .preview-frame{width:100%;height:600px;border:1px solid var(--border);border-radius:12px;background:#fff;margin-top:12px}
+  .stats{display:flex;gap:10px;margin:12px 0} .stat{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 12px} .stat b{display:block;font-size:1.1rem}
+</style>
+</head>
+<body>
+<h1>catalogs.html — <span>Generador de hijueputa-mil tiendas</span></h1>
+<p>Como Ecwid pero gratis y con tus links de afiliado. Arrastra tu XML (Lenovo 3k, DHgate 28k, etc.), y este dashboard genera: <b>1) Una tienda completa en un solo HTML</b> que subes a Cloudflare/Blogger, <b>2) Un iframe para incrustar donde quieras</b>, <b>3) El CSV para Meta</b>. Todo con botón "Comprar →" directo a tu <code>sjv.io/c/5637202/</code></p>
+
+<div id="dropZone" class="drop">
+  <div style="font-size:2rem">📦</div>
+  <div><b>Arrastra tu XML aquí</b> (IN-Lenovo_GOOGLE.xml, DHgate.xml, etc.)</div>
+  <div style="font-size:0.8rem;color:var(--muted);margin-top:4px">Click para seleccionar • Funciona offline • No se sube a ningún lado</div>
+  <input id="fileInput" type="file" accept=".xml" style="display:none">
+</div>
+
+<div class="row">
+  <div class="card-opt">
+    <h3>🏷️ Nombre de la tienda</h3>
+    <input id="storeName" value="Lenovo Outlet - The Outlet Planet" placeholder="Ej: Lenovo Outlet">
+    <h3 style="margin-top:10px">💰 Tu ID de afiliado (para el botón Comprar)</h3>
+    <input id="affId" value="5637202" placeholder="5637202">
+  </div>
+  <div class="card-opt">
+    <h3>🎨 Estilo de tienda</h3>
+    <select id="theme">
+      <option value="dark">Dark (como Hypermall)</option>
+      <option value="light">Light (para Blogger claro)</option>
+      <option value="minimal">Minimal (para iframe pequeño)</option>
+    </select>
+    <h3 style="margin-top:10px">🔘 Texto del botón</h3>
+    <input id="btnText" value="Comprar →" placeholder="Comprar →">
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><b id="statTotal">0</b><span style="font-size:0.7rem;color:var(--muted)">TOTAL XML</span></div>
+  <div class="stat"><b id="statStock">0</b><span style="font-size:0.7rem;color:var(--muted)">EN STOCK</span></div>
+  <div class="stat"><b id="statReady">0</b><span style="font-size:0.7rem;color:var(--muted)">LISTOS TIENDA</span></div>
+</div>
+
+<div class="row">
+  <button id="btnStore" class="btn" disabled>🏪 1. Generar Tienda Completa (HTML)</button>
+  <button id="btnIframe" class="btn btn-sec" disabled>🔲 2. Generar Iframe para Blogger</button>
+  <button id="btnMeta" class="btn btn-sec" disabled>📤 3. Generar CSV para Meta (FB/IG)</button>
+</div>
+
+<div id="log" class="log">Esperando XML...</div>
+
+<div id="outputs" style="display:none">
+  <h3 style="margin:20px 0 10px">✅ Tienda generada — Cópiala donde quieras</h3>
+  
+  <div class="card-opt">
+    <h3>📌 Opción A: Subir a Cloudflare Pages (tu hypermall)</h3>
+    <p style="font-size:0.85rem">Sube el archivo <code id="storeFileName">store-lenovo.html</code> a tu repo <code>flabelicornio/hypermall/stores/</code> y tendrás: <code>https://flabelicornio.github.io/hypermall/stores/store-lenovo.html</code> — luego lo linkeas desde tu index.html</p>
+    <div class="code-box">
+      <button class="copy-btn" onclick="copyCode('storeHTML')">Copiar HTML</button>
+      <pre id="storeHTMLPreview">...</pre>
+    </div>
+    <button class="btn" onclick="downloadStore()">⬇️ Descargar store-XXX.html</button>
+  </div>
+
+  <div class="card-opt" style="margin-top:12px">
+    <h3>📌 Opción B: Incrustar en Blogger / WordPress / Donde quieras (como Ecwid)</h3>
+    <p style="font-size:0.85rem">Copia y pega esto en Blogger > Diseño > Añadir gadget > HTML/JavaScript. ¡Tendrás hijueputa-mil tiendas sin pagar pasarela!</p>
+    <div class="code-box">
+      <button class="copy-btn" onclick="copyCode('iframeCode')">Copiar</button>
+      <pre id="iframeCode"></pre>
+    </div>
+    <div class="code-box">
+      <button class="copy-btn" onclick="copyCode('jsWidget')">Copiar</button>
+      <pre id="jsWidget"></pre>
+    </div>
+  </div>
+
+  <h3 style="margin:16px 0 8px">👀 Vista previa de tu tienda</h3>
+  <iframe id="previewFrame" class="preview-frame"></iframe>
+</div>
+
+<script>
+let products = [];
+let inStockProducts = [];
+let currentFileName = 'store';
+let lastGeneratedHTML = '';
+
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const logEl = document.getElementById('log');
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); const f=e.dataTransfer.files[0]; if(f) handleFile(f); });
+fileInput.addEventListener('change', e => { const f=e.target.files[0]; if(f) handleFile(f); });
+
+function log(m){ logEl.textContent += '\n' + m; logEl.scrollTop = logEl.scrollHeight; }
+
+function handleFile(file){
+  currentFileName = file.name.replace('.xml','').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,30);
+  logEl.textContent = `📄 Leyendo ${file.name} (${(file.size/1024/1024).toFixed(2)} MB)...`;
+  const reader = new FileReader();
+  reader.onload = e => parseXML(e.target.result, file.name);
+  reader.readAsText(file);
+}
+
+function parseXML(xmlText, fileName){
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xmlText, 'text/xml');
+  let entries = doc.getElementsByTagName('entry');
+  if (entries.length===0) entries = doc.getElementsByTagName('item');
+  if (entries.length===0) entries = doc.getElementsByTagName('Product');
+  log(`📦 Encontrados ${entries.length} productos`);
+  document.getElementById('statTotal').textContent = entries.length;
+
+  const adultKeywords = ['bestvibe','seekheart','bodyotics','penchant','fofana','ulike','oyrosy','nudco','condom','lube','vibrator','sex toy'];
+  products = [];
+  for (let i=0;i<entries.length;i++){
+    const entry = entries[i];
+    const get = (tag) => {
+      let el = entry.getElementsByTagName('g:'+tag)[0] || entry.getElementsByTagName(tag)[0];
+      return el ? el.textContent.trim() : '';
+    };
+    const id = get('id') || get('ProductId') || 'prod-'+i;
+    const title = get('title') || get('ProductName') || 'Producto';
+    const link = get('link') || get('ProductUrl') || '';
+    const description = (get('description') || title).slice(0,300);
+    const image_link = get('image_link') || get('ImageUrl') || '';
+    const availability = (get('availability') || 'in stock').toLowerCase();
+    const priceRaw = get('price') || get('CurrentPrice') || '0';
+    const brand = get('brand') || get('Brand') || 'Generic';
+    const category = get('google_product_category') || get('Category') || 'General';
+
+    if (adultKeywords.some(k => (title+' '+category).toLowerCase().includes(k))) continue;
+
+    let priceUSD = priceRaw;
+    if (priceRaw.includes('INR')){
+      const num = parseFloat(priceRaw.replace(/[^0-9.]/g,''));
+      if (!isNaN(num)) priceUSD = (num/83).toFixed(2) + ' USD';
+    } else if (!priceRaw.includes('USD')){
+      const num = parseFloat(priceRaw.replace(/[^0-9.]/g,''));
+      if (!isNaN(num) && num>0) priceUSD = (num).toFixed(2) + ' USD';
+    }
+
+    products.push({id,title,description,availability,price:priceUSD,priceRaw,link,image_link,brand,category});
+  }
+  inStockProducts = products.filter(p => p.availability.includes('in stock') && p.image_link && parseFloat(p.price)>5);
+  // Si no hay in stock, usa todos con imagen
+  if (inStockProducts.length < 20) inStockProducts = products.filter(p => p.image_link);
+
+  document.getElementById('statStock').textContent = products.filter(p=>p.availability.includes('in stock')).length;
+  document.getElementById('statReady').textContent = inStockProducts.length;
+  log(`✅ Listos: ${inStockProducts.length} productos para tienda (con imagen y precio USD)`);
+  log(`💡 Ahora genera tu tienda HTML para incrustar en Blogger como Ecwid`);
+
+  document.getElementById('btnStore').disabled = inStockProducts.length===0;
+  document.getElementById('btnIframe').disabled = inStockProducts.length===0;
+  document.getElementById('btnMeta').disabled = inStockProducts.length===0;
+}
+
+function generateStoreHTML(){
+  const storeName = document.getElementById('storeName').value || 'Mi Tienda';
+  const affId = document.getElementById('affId').value || '5637202';
+  const btnText = document.getElementById('btnText').value || 'Comprar →';
+  const theme = document.getElementById('theme').value;
+  
+  const bg = theme==='light' ? '#ffffff' : '#0a0a0f';
+  const surface = theme==='light' ? '#f8f8fa' : '#12121a';
+  const surface2 = theme==='light' ? '#ffffff' : '#1a1a26';
+  const border = theme==='light' ? '#e5e7eb' : '#2a2a3a';
+  const text = theme==='light' ? '#111827' : '#e8e8f0';
+  const muted = theme==='light' ? '#6b7280' : '#7878a0';
+
+  const productsJSON = JSON.stringify(inStockProducts.slice(0,5000)); // limita a 5000 para que el HTML no pese 50MB
+
+  const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${storeName}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,sans-serif;background:${bg};color:${text};padding:20px}
+  header{max-width:1200px;margin:0 auto 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+  h1{font-size:1.5rem} .count{color:${muted};font-size:0.85rem}
+  .search{max-width:400px;width:100%;background:${surface2};border:1px solid ${border};color:${text};padding:10px 14px;border-radius:10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;max-width:1200px;margin:0 auto}
+  .card{background:${surface};border:1px solid ${border};border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:transform 0.2s}
+  .card:hover{transform:translateY(-3px);border-color:#7c5cfc}
+  .card img{width:100%;height:180px;object-fit:contain;background:${surface2}}
+  .card-body{padding:12px;flex:1} .card-title{font-weight:600;font-size:0.9rem;line-height:1.3;height:2.6em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .card-brand{font-size:0.75rem;color:${muted};text-transform:uppercase;margin:4px 0} .card-price{color:#34d399;font-weight:800;margin-top:6px}
+  .card-footer{padding:0 12px 12px} .buy-btn{display:block;width:100%;padding:10px;background:linear-gradient(135deg,#7c5cfc,#9f75ff);color:#fff;text-align:center;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.88rem}
+  .buy-btn:hover{opacity:0.9}
+  footer{max-width:1200px;margin:30px auto 0;text-align:center;color:${muted};font-size:0.8rem;padding-top:20px;border-top:1px solid ${border}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>${storeName}</h1><div class="count">${inStockProducts.length} productos • Actualizado ${new Date().toLocaleDateString()}</div></div>
+  <input id="search" class="search" placeholder="Buscar laptop, ThinkCentre, i5...">
+</header>
+<div id="grid" class="grid"></div>
+<footer>Tienda generada con catalogs.html • The Outlet Planet • Powered by Impact.com • ID Afiliado ${affId}</footer>
+<script>
+const PRODUCTS = ${productsJSON};
+const btnText = ${JSON.stringify(btnText)};
+function render(list){
+  document.getElementById('grid').innerHTML = list.map(p => \`
+    <div class="card">
+      <img src="\${p.image_link}" onerror="this.src='https://via.placeholder.com/300?text=No+Image'" loading="lazy">
+      <div class="card-body">
+        <div class="card-title">\${p.title}</div>
+        <div class="card-brand">\${p.brand} • \${p.category.split('>').pop() || ''}</div>
+        <div class="card-price">\${p.price}</div>
+      </div>
+      <div class="card-footer"><a class="buy-btn" href="\${p.link}" target="_blank" rel="noopener">\${btnText}</a></div>
+    </div>
+  \`).join('');
+}
+render(PRODUCTS);
+document.getElementById('search').addEventListener('input', e=>{
+  const q=e.target.value.toLowerCase();
+  const filtered = PRODUCTS.filter(p=> !q || p.title.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q));
+  render(filtered);
+});
+<\/script>
+</body>
+</html>`;
+
+  return html;
+}
+
+document.getElementById('btnStore').addEventListener('click', ()=>{
+  const html = generateStoreHTML();
+  lastGeneratedHTML = html;
+  const fileName = `store-${currentFileName}.html`;
+  document.getElementById('storeFileName').textContent = fileName;
+  document.getElementById('storeHTMLPreview').textContent = html.slice(0,5000) + '\n... (archivo completo de ' + (html.length/1024).toFixed(0) + ' KB)';
+  document.getElementById('outputs').style.display = 'block';
+  
+  // Iframe codes
+  const cloudflareUrl = `https://flabelicornio.github.io/hypermall/stores/${fileName}`;
+  document.getElementById('iframeCode').textContent = `<!-- Tienda ${document.getElementById('storeName').value} - Como Ecwid pero gratis -->\n<iframe src="${cloudflareUrl}" width="100%" height="800" frameborder="0" loading="lazy" style="border-radius:12px"></iframe>\n<!-- Fin tienda -->`;
+  
+  document.getElementById('jsWidget').textContent = `<!-- Widget Blogger - Pega esto en Diseño > HTML/JavaScript -->\n<div id="hypermall-${currentFileName}"></div>\n<script>\nfetch('${cloudflareUrl}')\n  .then(r=>r.text())\n  .then(html=>{ document.getElementById('hypermall-${currentFileName}').innerHTML = html; })\n<\/script>`;
+
+  // Preview
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  document.getElementById('previewFrame').src = url;
+
+  log(`✅ Tienda generada: ${fileName} (${(html.length/1024).toFixed(0)} KB, ${inStockProducts.length} productos)`);
+});
+
+function downloadStore(){
+  if (!lastGeneratedHTML) return;
+  const fileName = `store-${currentFileName}.html`;
+  const blob = new Blob([lastGeneratedHTML], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=fileName; a.click(); URL.revokeObjectURL(url);
+}
+
+document.getElementById('btnIframe').addEventListener('click', ()=>{
+  document.getElementById('btnStore').click();
+  window.scrollTo(0, document.getElementById('outputs').offsetTop);
+});
+
+document.getElementById('btnMeta').addEventListener('click', ()=>{
+  const headers = ['id','title','description','availability','condition','price','link','image_link','brand','google_product_category','quantity_to_sell_on_facebook'];
+  const rows = inStockProducts.map(p=>[
+    p.id,
+    '"'+p.title.replace(/"/g,'""')+'"',
+    '"'+p.description.replace(/"/g,'""')+'"',
+    'in stock','new',p.price,p.link,p.image_link,'"'+p.brand.replace(/"/g,'""')+'"',p.category,100
+  ]);
+  const csv = [headers.join(','), ...rows.map(r=>r.join(','))].join('\\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=`Meta_${currentFileName}_${inStockProducts.length}prods_USD.csv`; a.click(); URL.revokeObjectURL(url);
+});
+
+function copyCode(id){
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(()=>{ log('📋 Copiado: '+id); });
+}
+</script>
+</body>
+</html>
