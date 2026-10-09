@@ -33,18 +33,23 @@ export async function onRequest(context) {
       page++;
     }
 
-    // Filter only active and map to what the frontend needs
+    // Filtrar adultos y mapear + detectar si tiene brand API key custom
+    const adultIds = [17716,17718,19060,18090,18091,18358,32511,21022,21023];
     const active = allCampaigns
-      .filter(c => c.ContractStatus === 'Active')
-      .map(c => ({
-        id: c.CampaignId,
-        title: c.CampaignName,
-        brand: c.AdvertiserName,
-        desc: c.CampaignDescription || '',
-        link: c.TrackingLink,
-        logo: c.CampaignLogoUri || '',
-        url: c.CampaignUrl || ''
-      }));
+      .filter(c => c.ContractStatus === 'Active' && !adultIds.includes(c.CampaignId))
+      .map(c => {
+        const hasCustomKey = !!context.env[`BRAND_${c.CampaignId}_TOKEN`] || !!context.env[`BRAND_${c.CampaignId}_APIKEY`];
+        return {
+          id: c.CampaignId,
+          title: c.CampaignName,
+          brand: c.AdvertiserName,
+          desc: c.CampaignDescription || '',
+          link: c.TrackingLink,
+          logo: c.CampaignLogoUri || '',
+          url: c.CampaignUrl || '',
+          hasCustomApiKey: hasCustomKey
+        };
+      });
 
     return new Response(JSON.stringify(active), {
       headers: {
